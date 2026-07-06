@@ -1,6 +1,6 @@
 // Erstattung – Beihilfe & PKV · Service Worker
 // WICHTIG: Cache-Version bei JEDEM Deploy hochzählen, sonst laden Clients alte Assets.
-const CACHE = 'erstattung-v1.1.0';
+const CACHE = 'erstattung-v1.2.0';
 
 const ASSETS = [
   './pkv.html',

@@ -217,6 +217,7 @@ header{
 .kat-chip{font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--brand-soft);color:var(--brand);display:inline-flex;align-items:center;gap:4px}
 .kat-chip svg{width:11px;height:11px}
 .rnr{font-variant-numeric:tabular-nums}
+.rk-meta .due{color:var(--ink);font-weight:600}
 
 /* konditionale Felder im Track-Edit */
 .cond{display:none;margin-top:8px}
@@ -310,6 +311,8 @@ header{
       <div class="field"><label for="fKat">Gesundheitsproblem</label><input type="text" id="fKat" list="katList" placeholder="z. B. Knie" autocomplete="off"><datalist id="katList"></datalist></div>
     </div>
 
+    <div class="field"><label for="fZiel">Zahlungsziel</label><input type="date" id="fZiel"><p class="hint">Bis wann die Rechnung zu bezahlen ist – solange unbezahlt, erscheint vor Ablauf eine Erinnerung auf der Karte.</p></div>
+
     <div class="pay-toggle">
       <span>Rechnung bezahlt</span>
       <div class="sw" id="swPaid" role="switch" tabindex="0"></div>
@@ -396,7 +399,7 @@ header{
 </div>
 
 <script>
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.2.0";
 const WORKER = "https://kv-store.neuzcore.workers.dev";
 const PREFIX = "pkv";
 const LS_DATA = "pkv_data_v1";
@@ -407,7 +410,7 @@ document.getElementById('verNum').textContent = APP_VERSION;
 document.getElementById('footVer').textContent = APP_VERSION;
 
 let state = { rechnungen: [] };
-let settings = { beihilfesatz: 50, fristMonate: 12 };
+let settings = { beihilfesatz: 50, fristMonate: 12, zahlWarnTage: 10 };
 let secret = localStorage.getItem(LS_SECRET) || "";
 let filter = "alle";
 let statsYear = "alle";
@@ -437,6 +440,7 @@ function normalize(r){
   return {
     id:r.id||uid(), datum:r.datum||"", arzt:r.arzt||"", betrag:+r.betrag||0,
     bezahlt:!!r.bezahlt, notiz:r.notiz||"", rechnungsnr:r.rechnungsnr||"", kategorie:(r.kategorie||"").trim(),
+    zahlungsziel:r.zahlungsziel||"",
     beihilfe:trackNorm(r.beihilfe),
     pkv:trackNorm(r.pkv),
     erstelltAm:r.erstelltAm||Date.now()
@@ -457,6 +461,17 @@ function fristInfo(r){
   return null;
 }
 function daysBetween(a,b){ if(!a||!b) return null; const d=Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000); return d>=0?d:null; }
+
+/* Zahlungsziel (eigene Zahlung der Rechnung) */
+function zahlInfo(r){
+  if(!r.zahlungsziel || r.bezahlt) return null; // bezahlt = erledigt
+  const ende=new Date(r.zahlungsziel+'T00:00:00');
+  const heute=new Date(); heute.setHours(0,0,0,0);
+  const tage=Math.round((ende-heute)/86400000);
+  if(tage<0) return {tage, level:'over'};
+  if(tage<=(settings.zahlWarnTage||10)) return {tage, level:'soon'};
+  return null;
+}
 
 function statusOf(r){
   if(r.beihilfe.erstattet && r.pkv.erstattet) return "abgeschlossen";
@@ -585,17 +600,22 @@ function renderList(){
   el.innerHTML=rs.map(r=>{
     const st=STATUS[statusOf(r)];
     const fr=fristInfo(r);
+    const zi=zahlInfo(r);
+    const zahlHtml = zi ? `<div class="frist ${zi.level}">${clockSvg()}${zi.level==='over'
+      ? `Zahlung überfällig – seit ${Math.abs(zi.tage)} ${Math.abs(zi.tage)===1?'Tag':'Tagen'} · Ziel ${fmtDate(r.zahlungsziel)}`
+      : `Zahlung fällig in ${zi.tage} ${zi.tage===1?'Tag':'Tagen'} · bis ${fmtDate(r.zahlungsziel)}`}</div>` : '';
     const fristHtml = fr ? `<div class="frist ${fr.level}">${warnSvg()}${fr.level==='over'
       ? `Beihilfe-Frist überschritten – seit ${Math.abs(fr.tage)} ${Math.abs(fr.tage)===1?'Tag':'Tagen'}`
       : `Beihilfe-Frist in ${fr.tage} ${fr.tage===1?'Tag':'Tagen'} · bis ${fmtDate(fr.ende)}`}</div>` : '';
     return `<div class="rk">
-      ${fristHtml}
+      ${zahlHtml}${fristHtml}
       <div class="rk-top">
         <div class="rk-main">
           <div class="rk-arzt">${escapeHtml(r.arzt||'Ohne Bezeichnung')}</div>
           <div class="rk-meta">
             <span>${fmtDate(r.datum)}</span>
             <span class="badge ${st.cls}">${st.lbl}</span>
+            ${(!r.bezahlt && r.zahlungsziel && !zi)?`<span class="due">· fällig ${fmtDate(r.zahlungsziel)}</span>`:''}
             ${r.kategorie?`<span class="kat-chip">${tagSvg()}${escapeHtml(r.kategorie)}</span>`:''}
             ${r.rechnungsnr?`<span class="rnr">Nr. ${escapeHtml(r.rechnungsnr)}</span>`:''}
             ${r.notiz?`<span>· ${escapeHtml(r.notiz)}</span>`:''}
@@ -615,6 +635,7 @@ function renderList(){
 }
 function warnSvg(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>'; }
 function tagSvg(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1-.6-1.4V4a1 1 0 0 1 1-1h7.9a2 2 0 0 1 1.4.6l7.5 7.5a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor"/></svg>'; }
+function clockSvg(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'; }
 function checkSvg2(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>'; }
 function circleSvg(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/></svg>'; }
 function escapeHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -665,7 +686,7 @@ function openAdd(){
   $('btnDelete').style.display='none';
   $('fDatum').value=today();
   $('fBetrag').value=''; $('fArzt').value=''; $('fNotiz').value=''; $('fBeAmt').value=''; $('fPkvAmt').value='';
-  $('fRnr').value=''; $('fKat').value='';
+  $('fRnr').value=''; $('fKat').value=''; $('fZiel').value='';
   $('fBeReqDate').value=''; $('fBeDoneDate').value=''; $('fPkvReqDate').value=''; $('fPkvDoneDate').value='';
   setSw($('swPaid'),false);
   setSw($('swBeReq'),false); setSw($('swBeDone'),false);
@@ -679,7 +700,7 @@ function openEdit(r){
   $('sheetTitle').textContent='Rechnung bearbeiten';
   $('btnDelete').style.display='';
   $('fDatum').value=r.datum||''; $('fBetrag').value=fmtInput(r.betrag); $('fArzt').value=r.arzt||''; $('fNotiz').value=r.notiz||'';
-  $('fRnr').value=r.rechnungsnr||''; $('fKat').value=r.kategorie||'';
+  $('fRnr').value=r.rechnungsnr||''; $('fKat').value=r.kategorie||''; $('fZiel').value=r.zahlungsziel||'';
   setSw($('swPaid'),r.bezahlt);
   setSw($('swBeReq'),r.beihilfe.beantragt); setSw($('swBeDone'),r.beihilfe.erstattet);
   setSw($('swPkvReq'),r.pkv.beantragt); setSw($('swPkvDone'),r.pkv.erstattet);
@@ -699,7 +720,7 @@ function saveSheet(){
   const rec=normalize({
     id:editId||uid(),
     datum:$('fDatum').value, arzt, betrag, notiz:$('fNotiz').value.trim(),
-    rechnungsnr:$('fRnr').value.trim(), kategorie:$('fKat').value.trim(),
+    rechnungsnr:$('fRnr').value.trim(), kategorie:$('fKat').value.trim(), zahlungsziel:$('fZiel').value,
     bezahlt:swVal($('swPaid')),
     beihilfe:{ beantragt:beReq, beantragtAm: beReq?($('fBeReqDate').value||today()):"",
       erstattet:beDone, erstattetAm: beDone?($('fBeDoneDate').value||today()):"",
