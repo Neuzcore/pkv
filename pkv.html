@@ -207,6 +207,56 @@ header{
 .ver{text-align:center;font-size:11px;color:var(--ink-faint);padding:18px}
 .app-foot{text-align:center;font-size:11px;color:var(--ink-faint);padding:8px 18px 24px;letter-spacing:.02em}
 
+/* Fristwarnung */
+.frist{display:flex;align-items:center;gap:7px;padding:8px 15px;font-size:12px;font-weight:600;border-bottom:1px solid var(--line)}
+.frist svg{width:15px;height:15px;flex:none}
+.frist.soon{background:var(--beihilfe-soft);color:var(--beihilfe)}
+.frist.over{background:#FBE7E2;color:#B5432E}
+
+/* Kategorie-Chip & Rechnungsnr in Meta */
+.kat-chip{font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--brand-soft);color:var(--brand);display:inline-flex;align-items:center;gap:4px}
+.kat-chip svg{width:11px;height:11px}
+.rnr{font-variant-numeric:tabular-nums}
+
+/* konditionale Felder im Track-Edit */
+.cond{display:none;margin-top:8px}
+.cond.show{display:block;animation:slidein .2s}
+.field.mini{margin-bottom:0}
+.field.mini label{font-size:11px;margin-bottom:5px}
+.field.mini input{padding:11px 12px;font-size:15px}
+.trk-date{margin-top:8px}
+
+/* kleine Erstattungs-Datumszeile auf der Karte */
+.step .dt{font-size:10.5px;color:var(--ink-faint);font-weight:500;margin-left:6px}
+
+/* ---------- Auswertung ---------- */
+.year-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:18px}
+.year-tabs::-webkit-scrollbar{display:none}
+.ytab{white-space:nowrap;font-size:13px;font-weight:600;padding:8px 15px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink-soft)}
+.ytab.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.stat.full{grid-column:1/-1}
+.stat .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:600}
+.stat .val{font-family:'Fraunces',serif;font-size:23px;font-weight:500;margin-top:5px;letter-spacing:-.02em}
+.stat.eigen .val{color:#B5432E}
+.stat.erst .val{color:var(--ok)}
+.stat .sub{font-size:11px;color:var(--ink-soft);margin-top:3px}
+.a-sec-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin:6px 0 12px}
+.kat-row{margin-bottom:14px}
+.kat-row-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:10px}
+.kat-row-name{font-size:14px;font-weight:600}
+.kat-row-val{font-family:'Fraunces',serif;font-size:15px;font-weight:500;flex:none;font-variant-numeric:tabular-nums}
+.kat-bar{height:9px;border-radius:5px;background:var(--bg);overflow:hidden}
+.kat-bar span{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--beihilfe),var(--pkv))}
+.kat-row-sub{font-size:11px;color:var(--ink-faint);margin-top:4px}
+.dur-row{display:flex;gap:10px;margin-bottom:8px}
+.dur{flex:1;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px}
+.dur .lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.dur.be .lbl{color:var(--beihilfe)}.dur.pkv .lbl{color:var(--pkv)}
+.dur .val{font-family:'Fraunces',serif;font-size:19px;margin-top:3px}
+.dur .val small{font-family:'Inter';font-size:12px;color:var(--ink-faint);font-weight:500}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -222,6 +272,9 @@ header{
     </div>
     <div class="head-actions">
       <div class="sync" id="sync"><span class="dot" id="syncDot"></span><span id="syncTxt">…</span></div>
+      <button class="icon-btn" id="btnStats" aria-label="Auswertung">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+      </button>
       <button class="icon-btn" id="btnSettings" aria-label="Einstellungen">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -252,6 +305,10 @@ header{
       <div class="field"><label for="fBetrag">Betrag</label><div class="euro-wrap"><input type="text" inputmode="decimal" id="fBetrag" placeholder="0,00"></div></div>
     </div>
     <div class="field"><label for="fArzt">Arzt / Leistungserbringer</label><input type="text" id="fArzt" placeholder="z. B. Dr. Müller, Zahnarzt"></div>
+    <div class="row2">
+      <div class="field"><label for="fRnr">Rechnungsnummer</label><input type="text" id="fRnr" placeholder="optional"></div>
+      <div class="field"><label for="fKat">Gesundheitsproblem</label><input type="text" id="fKat" list="katList" placeholder="z. B. Knie" autocomplete="off"><datalist id="katList"></datalist></div>
+    </div>
 
     <div class="pay-toggle">
       <span>Rechnung bezahlt</span>
@@ -261,11 +318,14 @@ header{
     <div class="trk-edit be">
       <h3>Beihilfe <span class="exp" id="expBe">erwartet 0,00 €</span></h3>
       <div class="toggle-row"><span>Erstattung beantragt</span><div class="sw be" id="swBeReq" role="switch" tabindex="0"></div></div>
+      <div class="cond" id="beReqWrap">
+        <div class="field mini trk-date"><label for="fBeReqDate">Beantragt am</label><input type="date" id="fBeReqDate"></div>
+      </div>
       <div class="toggle-row"><span>Erstattung liegt vor</span><div class="sw be" id="swBeDone" role="switch" tabindex="0"></div></div>
-      <div class="reimb-amt" id="beAmtWrap">
-        <div class="field" style="margin:6px 0 0">
-          <label for="fBeAmt">Erstatteter Betrag Beihilfe</label>
-          <div class="euro-wrap"><input type="text" inputmode="decimal" id="fBeAmt" placeholder="0,00"></div>
+      <div class="cond" id="beAmtWrap">
+        <div class="row2">
+          <div class="field mini"><label for="fBeAmt">Erstatteter Betrag</label><div class="euro-wrap"><input type="text" inputmode="decimal" id="fBeAmt" placeholder="0,00"></div></div>
+          <div class="field mini"><label for="fBeDoneDate">Erstattet am</label><input type="date" id="fBeDoneDate"></div>
         </div>
       </div>
     </div>
@@ -273,11 +333,14 @@ header{
     <div class="trk-edit pkv">
       <h3>Private KV <span class="exp" id="expPkv">erwartet 0,00 €</span></h3>
       <div class="toggle-row"><span>Erstattung beantragt</span><div class="sw pkv" id="swPkvReq" role="switch" tabindex="0"></div></div>
+      <div class="cond" id="pkvReqWrap">
+        <div class="field mini trk-date"><label for="fPkvReqDate">Beantragt am</label><input type="date" id="fPkvReqDate"></div>
+      </div>
       <div class="toggle-row"><span>Erstattung liegt vor</span><div class="sw pkv" id="swPkvDone" role="switch" tabindex="0"></div></div>
-      <div class="reimb-amt" id="pkvAmtWrap">
-        <div class="field" style="margin:6px 0 0">
-          <label for="fPkvAmt">Erstatteter Betrag PKV</label>
-          <div class="euro-wrap"><input type="text" inputmode="decimal" id="fPkvAmt" placeholder="0,00"></div>
+      <div class="cond" id="pkvAmtWrap">
+        <div class="row2">
+          <div class="field mini"><label for="fPkvAmt">Erstatteter Betrag</label><div class="euro-wrap"><input type="text" inputmode="decimal" id="fPkvAmt" placeholder="0,00"></div></div>
+          <div class="field mini"><label for="fPkvDoneDate">Erstattet am</label><input type="date" id="fPkvDoneDate"></div>
         </div>
       </div>
     </div>
@@ -322,8 +385,18 @@ header{
   </div>
 </div>
 
+<!-- Auswertung -->
+<div class="scrim" id="scrim3"></div>
+<div class="sheet" id="sheet3" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="sheet-head"><h2>Auswertung</h2>
+    <button class="icon-btn" id="btnClose3" aria-label="Schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="sheet-body" id="statsBody"></div>
+</div>
+
 <script>
-const APP_VERSION = "1.0.2";
+const APP_VERSION = "1.1.0";
 const WORKER = "https://kv-store.neuzcore.workers.dev";
 const PREFIX = "pkv";
 const LS_DATA = "pkv_data_v1";
@@ -334,9 +407,10 @@ document.getElementById('verNum').textContent = APP_VERSION;
 document.getElementById('footVer').textContent = APP_VERSION;
 
 let state = { rechnungen: [] };
-let settings = { beihilfesatz: 50 };
+let settings = { beihilfesatz: 50, fristMonate: 12 };
 let secret = localStorage.getItem(LS_SECRET) || "";
 let filter = "alle";
+let statsYear = "alle";
 let editId = null;
 let pushTimer = null;
 
@@ -346,20 +420,43 @@ const fmtDate = iso => { if(!iso) return "—"; const [y,m,d]=iso.split('-'); re
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 function parseEuro(v){ if(v==null) return 0; const s=String(v).replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,''); const n=parseFloat(s); return isNaN(n)?0:n; }
 function fmtInput(n){ return (n||n===0) ? n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}) : ""; }
+const today = () => new Date().toISOString().slice(0,10);
+
+const KAT_DEFAULT = ['Zähne','Knie','Rücken','Schulter','Hüfte','Augen','Haut','Herz','Allgemein','Vorsorge','Physiotherapie','Medikamente','Heilmittel','Hilfsmittel'];
+function allKategorien(){
+  const used=state.rechnungen.map(r=>r.kategorie).filter(Boolean);
+  return [...new Set([...used, ...KAT_DEFAULT])];
+}
+function fillKatList(){
+  document.getElementById('katList').innerHTML = allKategorien().map(k=>`<option value="${escapeHtml(k)}">`).join('');
+}
 
 function blank(r){ return { beantragt:false, erstattet:false, betrag:null }; }
+function trackNorm(t){ return Object.assign({beantragt:false,beantragtAm:"",erstattet:false,erstattetAm:"",betrag:null}, t||{}); }
 function normalize(r){
   return {
     id:r.id||uid(), datum:r.datum||"", arzt:r.arzt||"", betrag:+r.betrag||0,
-    bezahlt:!!r.bezahlt, notiz:r.notiz||"",
-    beihilfe:Object.assign({beantragt:false,erstattet:false,betrag:null}, r.beihilfe||{}),
-    pkv:Object.assign({beantragt:false,erstattet:false,betrag:null}, r.pkv||{}),
+    bezahlt:!!r.bezahlt, notiz:r.notiz||"", rechnungsnr:r.rechnungsnr||"", kategorie:(r.kategorie||"").trim(),
+    beihilfe:trackNorm(r.beihilfe),
+    pkv:trackNorm(r.pkv),
     erstelltAm:r.erstelltAm||Date.now()
   };
 }
 function expBeihilfe(r){ return r.betrag * settings.beihilfesatz/100; }
 function expPkv(r){ return r.betrag * (100-settings.beihilfesatz)/100; }
 function received(r){ return (r.beihilfe.erstattet?(r.beihilfe.betrag??expBeihilfe(r)):0) + (r.pkv.erstattet?(r.pkv.betrag??expPkv(r)):0); }
+
+/* Beihilfe-Frist (Hessen: 1 Jahr nach Entstehen der Aufwendung) */
+function fristInfo(r){
+  if(!r.datum || r.beihilfe.beantragt) return null; // ohne Datum irrelevant, nach Antrag gewahrt
+  const ende=new Date(r.datum+'T00:00:00'); ende.setMonth(ende.getMonth()+(settings.fristMonate||12));
+  const heute=new Date(); heute.setHours(0,0,0,0);
+  const tage=Math.round((ende-heute)/86400000);
+  if(tage<0) return {tage, level:'over', ende:ende.toISOString().slice(0,10)};
+  if(tage<=60) return {tage, level:'soon', ende:ende.toISOString().slice(0,10)};
+  return null;
+}
+function daysBetween(a,b){ if(!a||!b) return null; const d=Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000); return d>=0?d:null; }
 
 function statusOf(r){
   if(r.beihilfe.erstattet && r.pkv.erstattet) return "abgeschlossen";
@@ -466,9 +563,9 @@ function trackHtml(r, key){
     <div class="trk-head"><span class="trk-name">${isBe?'Beihilfe':'PKV'}</span><span class="trk-exp">${eur(exp)}</span></div>
     <div class="trk-body">
       <button class="step ${t.beantragt?'done':''}" data-act="req" data-id="${r.id}" data-k="${key}">
-        <span class="box">${checkSvg()}</span>beantragt</button>
+        <span class="box">${checkSvg()}</span>beantragt${t.beantragt&&t.beantragtAm?`<span class="dt">${fmtDate(t.beantragtAm)}</span>`:''}</button>
       <button class="step reimb ${t.erstattet?'done':''}" data-act="done" data-id="${r.id}" data-k="${key}">
-        <span class="box">${checkSvg()}</span>erstattet
+        <span class="box">${checkSvg()}</span>erstattet${t.erstattet&&t.erstattetAm?`<span class="dt">${fmtDate(t.erstattetAm)}</span>`:''}
         ${t.erstattet?`<span class="amt ${short?'short':''}">${eur(amt)}</span>`:''}</button>
     </div></div>`;
 }
@@ -487,13 +584,20 @@ function renderList(){
   }
   el.innerHTML=rs.map(r=>{
     const st=STATUS[statusOf(r)];
+    const fr=fristInfo(r);
+    const fristHtml = fr ? `<div class="frist ${fr.level}">${warnSvg()}${fr.level==='over'
+      ? `Beihilfe-Frist überschritten – seit ${Math.abs(fr.tage)} ${Math.abs(fr.tage)===1?'Tag':'Tagen'}`
+      : `Beihilfe-Frist in ${fr.tage} ${fr.tage===1?'Tag':'Tagen'} · bis ${fmtDate(fr.ende)}`}</div>` : '';
     return `<div class="rk">
+      ${fristHtml}
       <div class="rk-top">
         <div class="rk-main">
           <div class="rk-arzt">${escapeHtml(r.arzt||'Ohne Bezeichnung')}</div>
           <div class="rk-meta">
             <span>${fmtDate(r.datum)}</span>
             <span class="badge ${st.cls}">${st.lbl}</span>
+            ${r.kategorie?`<span class="kat-chip">${tagSvg()}${escapeHtml(r.kategorie)}</span>`:''}
+            ${r.rechnungsnr?`<span class="rnr">Nr. ${escapeHtml(r.rechnungsnr)}</span>`:''}
             ${r.notiz?`<span>· ${escapeHtml(r.notiz)}</span>`:''}
           </div>
         </div>
@@ -509,6 +613,8 @@ function renderList(){
     </div>`;
   }).join('');
 }
+function warnSvg(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>'; }
+function tagSvg(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1-.6-1.4V4a1 1 0 0 1 1-1h7.9a2 2 0 0 1 1.4.6l7.5 7.5a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor"/></svg>'; }
 function checkSvg2(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>'; }
 function circleSvg(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/></svg>'; }
 function escapeHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -520,10 +626,10 @@ document.getElementById('list').addEventListener('click',e=>{
   const act=btn.dataset.act;
   if(act==='edit'){ openEdit(r); return; }
   if(act==='pay'){ r.bezahlt=!r.bezahlt; save(); return; }
-  if(act==='req'){ const t=r[btn.dataset.k]; t.beantragt=!t.beantragt; save(); return; }
+  if(act==='req'){ const t=r[btn.dataset.k]; t.beantragt=!t.beantragt; if(t.beantragt&&!t.beantragtAm) t.beantragtAm=today(); save(); return; }
   if(act==='done'){
     const t=r[btn.dataset.k];
-    if(!t.erstattet){ t.erstattet=true; t.beantragt=true; if(t.betrag==null) t.betrag=btn.dataset.k==='beihilfe'?expBeihilfe(r):expPkv(r); }
+    if(!t.erstattet){ t.erstattet=true; t.beantragt=true; if(!t.beantragtAm) t.beantragtAm=today(); if(!t.erstattetAm) t.erstattetAm=today(); if(t.betrag==null) t.betrag=btn.dataset.k==='beihilfe'?expBeihilfe(r):expPkv(r); }
     else { t.erstattet=false; }
     save(); return;
   }
@@ -545,34 +651,43 @@ function refreshExp(){
   $('expBe').textContent='erwartet '+eur(betrag*settings.beihilfesatz/100);
   $('expPkv').textContent='erwartet '+eur(betrag*(100-settings.beihilfesatz)/100);
 }
-function toggleAmt(){
+function toggleCond(){
+  $('beReqWrap').classList.toggle('show', swVal($('swBeReq')));
   $('beAmtWrap').classList.toggle('show', swVal($('swBeDone')));
+  $('pkvReqWrap').classList.toggle('show', swVal($('swPkvReq')));
   $('pkvAmtWrap').classList.toggle('show', swVal($('swPkvDone')));
 }
 
 function openAdd(){
   editId=null;
+  fillKatList();
   $('sheetTitle').textContent='Neue Rechnung';
   $('btnDelete').style.display='none';
-  $('fDatum').value=new Date().toISOString().slice(0,10);
+  $('fDatum').value=today();
   $('fBetrag').value=''; $('fArzt').value=''; $('fNotiz').value=''; $('fBeAmt').value=''; $('fPkvAmt').value='';
+  $('fRnr').value=''; $('fKat').value='';
+  $('fBeReqDate').value=''; $('fBeDoneDate').value=''; $('fPkvReqDate').value=''; $('fPkvDoneDate').value='';
   setSw($('swPaid'),false);
   setSw($('swBeReq'),false); setSw($('swBeDone'),false);
   setSw($('swPkvReq'),false); setSw($('swPkvDone'),false);
-  refreshExp(); toggleAmt();
+  refreshExp(); toggleCond();
   openScrim($('scrim'),$('sheet')); $('fArzt').focus();
 }
 function openEdit(r){
   editId=r.id;
+  fillKatList();
   $('sheetTitle').textContent='Rechnung bearbeiten';
   $('btnDelete').style.display='';
   $('fDatum').value=r.datum||''; $('fBetrag').value=fmtInput(r.betrag); $('fArzt').value=r.arzt||''; $('fNotiz').value=r.notiz||'';
+  $('fRnr').value=r.rechnungsnr||''; $('fKat').value=r.kategorie||'';
   setSw($('swPaid'),r.bezahlt);
   setSw($('swBeReq'),r.beihilfe.beantragt); setSw($('swBeDone'),r.beihilfe.erstattet);
   setSw($('swPkvReq'),r.pkv.beantragt); setSw($('swPkvDone'),r.pkv.erstattet);
   $('fBeAmt').value = r.beihilfe.betrag!=null?fmtInput(r.beihilfe.betrag):'';
   $('fPkvAmt').value = r.pkv.betrag!=null?fmtInput(r.pkv.betrag):'';
-  refreshExp(); toggleAmt();
+  $('fBeReqDate').value=r.beihilfe.beantragtAm||''; $('fBeDoneDate').value=r.beihilfe.erstattetAm||'';
+  $('fPkvReqDate').value=r.pkv.beantragtAm||''; $('fPkvDoneDate').value=r.pkv.erstattetAm||'';
+  refreshExp(); toggleCond();
   openScrim($('scrim'),$('sheet'));
 }
 function saveSheet(){
@@ -580,13 +695,17 @@ function saveSheet(){
   const arzt=$('fArzt').value.trim();
   if(!arzt && !betrag){ $('fArzt').focus(); return; }
   const beDone=swVal($('swBeDone')), pkvDone=swVal($('swPkvDone'));
+  const beReq=swVal($('swBeReq'))||beDone, pkvReq=swVal($('swPkvReq'))||pkvDone;
   const rec=normalize({
     id:editId||uid(),
     datum:$('fDatum').value, arzt, betrag, notiz:$('fNotiz').value.trim(),
+    rechnungsnr:$('fRnr').value.trim(), kategorie:$('fKat').value.trim(),
     bezahlt:swVal($('swPaid')),
-    beihilfe:{ beantragt:swVal($('swBeReq'))||beDone, erstattet:beDone,
+    beihilfe:{ beantragt:beReq, beantragtAm: beReq?($('fBeReqDate').value||today()):"",
+      erstattet:beDone, erstattetAm: beDone?($('fBeDoneDate').value||today()):"",
       betrag: beDone ? (($('fBeAmt').value.trim()!=='')?parseEuro($('fBeAmt').value):betrag*settings.beihilfesatz/100) : ((editId&&$('fBeAmt').value.trim()!=='')?parseEuro($('fBeAmt').value):null) },
-    pkv:{ beantragt:swVal($('swPkvReq'))||pkvDone, erstattet:pkvDone,
+    pkv:{ beantragt:pkvReq, beantragtAm: pkvReq?($('fPkvReqDate').value||today()):"",
+      erstattet:pkvDone, erstattetAm: pkvDone?($('fPkvDoneDate').value||today()):"",
       betrag: pkvDone ? (($('fPkvAmt').value.trim()!=='')?parseEuro($('fPkvAmt').value):betrag*(100-settings.beihilfesatz)/100) : ((editId&&$('fPkvAmt').value.trim()!=='')?parseEuro($('fPkvAmt').value):null) },
     erstelltAm: editId ? (state.rechnungen.find(x=>x.id===editId)?.erstelltAm||Date.now()) : Date.now()
   });
@@ -609,7 +728,16 @@ $('btnDelete').onclick=delRec;
 $('fBetrag').addEventListener('input',refreshExp);
 ['swPaid','swBeReq','swBeDone','swPkvReq','swPkvDone'].forEach(id=>{
   const el=$(id);
-  const flip=()=>{ setSw(el,!swVal(el)); if(id==='swBeDone'||id==='swPkvDone') toggleAmt(); };
+  const flip=()=>{
+    const on=!swVal(el); setSw(el,on);
+    if(on){
+      if(id==='swBeReq' && !$('fBeReqDate').value) $('fBeReqDate').value=today();
+      if(id==='swPkvReq' && !$('fPkvReqDate').value) $('fPkvReqDate').value=today();
+      if(id==='swBeDone'){ if(!$('fBeDoneDate').value) $('fBeDoneDate').value=today(); if($('fBeAmt').value.trim()==='') $('fBeAmt').value=fmtInput(parseEuro($('fBetrag').value)*settings.beihilfesatz/100); }
+      if(id==='swPkvDone'){ if(!$('fPkvDoneDate').value) $('fPkvDoneDate').value=today(); if($('fPkvAmt').value.trim()==='') $('fPkvAmt').value=fmtInput(parseEuro($('fBetrag').value)*(100-settings.beihilfesatz)/100); }
+    }
+    toggleCond();
+  };
   el.addEventListener('click',flip);
   el.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){e.preventDefault();flip();} });
 });
@@ -633,6 +761,61 @@ $('btnSaveSet').onclick=()=>{
   closeScrim($('scrim2'),$('sheet2'));
   if(changed) pullCloud(); else pushCloud();
 };
+
+/* ---------- Auswertung ---------- */
+function relevantRs(year){ return state.rechnungen.filter(r=> year==='alle' ? true : (r.datum||'').slice(0,4)===year); }
+function computeStats(year){
+  const rs=relevantRs(year);
+  let gesamt=0, erstattet=0, ausstehend=0;
+  const katMap={};
+  rs.forEach(r=>{
+    const off = statusOf(r)!=='abgeschlossen';
+    const aus = off ? Math.max(0,(expBeihilfe(r)+expPkv(r))-received(r)) : 0;
+    gesamt+=r.betrag; erstattet+=received(r); ausstehend+=aus;
+    const k=r.kategorie||'Ohne Kategorie';
+    if(!katMap[k]) katMap[k]={name:k,betrag:0,erstattet:0,ausstehend:0,n:0};
+    katMap[k].betrag+=r.betrag; katMap[k].erstattet+=received(r); katMap[k].ausstehend+=aus; katMap[k].n++;
+  });
+  const eigen=Math.max(0, gesamt-erstattet-ausstehend);
+  const kats=Object.values(katMap).map(v=>({...v,eigen:Math.max(0,v.betrag-v.erstattet-v.ausstehend)})).sort((a,b)=>b.betrag-a.betrag);
+  const dur=key=>{ const ds=rs.map(r=>daysBetween(r[key].beantragtAm,r[key].erstattetAm)).filter(d=>d!=null); return ds.length?Math.round(ds.reduce((a,b)=>a+b,0)/ds.length):null; };
+  return {count:rs.length,gesamt,erstattet,ausstehend,eigen,kats,durBe:dur('beihilfe'),durPkv:dur('pkv')};
+}
+function renderStats(){
+  const years=[...new Set(state.rechnungen.map(r=>(r.datum||'').slice(0,4)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
+  if(statsYear!=='alle' && !years.includes(statsYear)) statsYear='alle';
+  const s=computeStats(statsYear);
+  const maxKat=Math.max(1,...s.kats.map(k=>k.betrag));
+  const yearTabs=`<div class="year-tabs"><button class="ytab ${statsYear==='alle'?'on':''}" data-y="alle">Gesamt</button>${years.map(y=>`<button class="ytab ${statsYear===y?'on':''}" data-y="${y}">${y}</button>`).join('')}</div>`;
+  const katHtml = s.kats.length ? s.kats.map(k=>`
+    <div class="kat-row">
+      <div class="kat-row-top"><span class="kat-row-name">${escapeHtml(k.name)}</span><span class="kat-row-val">${eur(k.betrag)}</span></div>
+      <div class="kat-bar"><span style="width:${Math.round(k.betrag/maxKat*100)}%"></span></div>
+      <div class="kat-row-sub">${k.n} ${k.n===1?'Rechnung':'Rechnungen'} · erstattet ${eur(k.erstattet)}${k.eigen>0.005?` · Eigenanteil ${eur(k.eigen)}`:''}${k.ausstehend>0.005?` · offen ${eur(k.ausstehend)}`:''}</div>
+    </div>`).join('') : '<p class="hint">Noch keine Daten in diesem Zeitraum.</p>';
+  const durHtml = (s.durBe!=null||s.durPkv!=null) ? `
+    <div class="a-sec-title">Ø Erstattungsdauer</div>
+    <div class="dur-row">
+      <div class="dur be"><div class="lbl">Beihilfe</div><div class="val">${s.durBe!=null?s.durBe+' <small>Tage</small>':'—'}</div></div>
+      <div class="dur pkv"><div class="lbl">PKV</div><div class="val">${s.durPkv!=null?s.durPkv+' <small>Tage</small>':'—'}</div></div>
+    </div>
+    <p class="hint" style="margin-top:-2px">Vom Antrags- bis zum Erstattungsdatum, sofern beide erfasst.</p>` : '';
+  $('statsBody').innerHTML = yearTabs + `
+    <div class="stat-grid">
+      <div class="stat full"><div class="lbl">Rechnungen gesamt</div><div class="val">${eur(s.gesamt)}</div><div class="sub">${s.count} ${s.count===1?'Rechnung':'Rechnungen'}${statsYear!=='alle'?' · '+statsYear:''}</div></div>
+      <div class="stat erst"><div class="lbl">Erstattet</div><div class="val">${eur(s.erstattet)}</div></div>
+      <div class="stat"><div class="lbl">Noch ausstehend</div><div class="val">${eur(s.ausstehend)}</div></div>
+      <div class="stat eigen full"><div class="lbl">Eigenanteil (selbst getragen)</div><div class="val">${eur(s.eigen)}</div><div class="sub">nach aktuellem Stand nicht erstattet – z. B. für die Steuererklärung</div></div>
+    </div>
+    <div class="a-sec-title">Nach Gesundheitsproblem</div>
+    ${katHtml}
+    ${durHtml}`;
+}
+function openStats(){ renderStats(); openScrim($('scrim3'),$('sheet3')); }
+$('btnStats').onclick=openStats;
+$('btnClose3').onclick=()=>closeScrim($('scrim3'),$('sheet3'));
+$('scrim3').onclick=()=>closeScrim($('scrim3'),$('sheet3'));
+$('statsBody').addEventListener('click',e=>{ const t=e.target.closest('.ytab'); if(!t) return; statsYear=t.dataset.y; renderStats(); });
 
 /* ---------- Start ---------- */
 loadLocal();
